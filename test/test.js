@@ -18,6 +18,16 @@ var describeStatusMessage = !/statusMessage/.test(http.IncomingMessage.toString(
   ? describe.skip
   : describe
 
+var describeHttp2 = describe.skip
+try {
+  var http2 = require('http2')
+  describeHttp2 = describe
+} catch (err) {
+  if (err) {
+    console.log('http2 tests disabled.')
+  }
+}
+
 describe('finalhandler(req, res)', function () {
   describe('headers', function () {
     it('should ignore err.headers without status code', function (done) {
@@ -514,15 +524,8 @@ describe('finalhandler(req, res)', function () {
   })
 })
 
-describe('HTTP2', function () {
+describeHttp2('HTTP2', function () {
   it('should not set statusMessage for HTTP2 response', function (done) {
-    var http2
-    try {
-      http2 = require('http2')
-    } catch (e) {
-      return done()
-    }
-
     process.once('warning', function (warning) {
       assert.fail(warning)
     })
